@@ -19,8 +19,11 @@ const isLoading = ref(false); // Flag to indicate loading
 
 const sendMessage = async () => {
   if (userInput.value.trim() !== "") {
+    // Add the user's message to the messages array
     messages.value.push({ text: userInput.value, sender: "user" });
-    userInput.value = "";
+    const userPrompt = userInput.value;  // Store the user input
+
+    userInput.value = "";  // Clear the input field
 
     // Wait for DOM updates, then scroll to the bottom
     await nextTick();
@@ -45,7 +48,7 @@ const sendMessage = async () => {
           },
           body: JSON.stringify({
             user_id: "a69z52ea",  // Sample user_id
-            prompt: "some transactions that are not very usual"  // Your input prompt
+            prompt: userPrompt  // Pass the userPrompt value to the POST request
           })
         });
 
@@ -67,7 +70,7 @@ const sendMessage = async () => {
 
       await nextTick();
       scrollToBottom();
-    }, 3000);
+    }, 3000);  // Simulate a delay of 3 seconds
   }
 };
 
