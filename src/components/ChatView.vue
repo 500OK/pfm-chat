@@ -7,6 +7,13 @@ const messages = ref([
   { text: "What can you do?", sender: "user" },
 ]);
 
+const predefinedPrompts = ref([
+  "Tell me a joke",
+  "What’s the weather like?",
+  "Help with my account",
+  "What services do you offer?",
+]);
+
 const messagesContainer = ref(null);
 
 const sendMessage = async () => {
@@ -26,6 +33,19 @@ const sendMessage = async () => {
       scrollToBottom();
     }, 1000);
   }
+};
+
+const sendPredefinedMessage = async (prompt) => {
+  messages.value.push({ text: prompt, sender: "user" });
+  await nextTick();
+  scrollToBottom();
+
+  // Simulate bot reply after prompt is selected
+  setTimeout(async () => {
+    messages.value.push({ text: `You asked: ${prompt}`, sender: "bot" });
+    await nextTick();
+    scrollToBottom();
+  }, 1000);
 };
 
 const scrollToBottom = () => {
@@ -48,6 +68,16 @@ const scrollToBottom = () => {
         ]">
           {{ message.text }}
         </div>
+      </div>
+    </div>
+
+    <!-- Predefined prompts section -->
+    <div class="p-4 bg-white border-t border-gray-300">
+      <div class="flex space-x-2">
+        <button v-for="(prompt, index) in predefinedPrompts" :key="index" @click="sendPredefinedMessage(prompt)"
+          class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800">
+          {{ prompt }}
+        </button>
       </div>
     </div>
 
