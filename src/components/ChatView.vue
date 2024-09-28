@@ -56,15 +56,15 @@ const scrollToBottom = () => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen bg-gray-100">
+  <div class="flex flex-col h-screen bg-gray-50 text-gray-900">
     <!-- Chat messages section -->
-    <div class="flex-1 overflow-auto p-4 space-y-4" ref="messagesContainer">
+    <div class="flex-1 overflow-auto p-6 space-y-4" ref="messagesContainer">
       <div v-for="(message, index) in messages" :key="index" class="flex flex-col">
         <div :class="[
-          'max-w-xs p-3 rounded-lg',
+          'max-w-xs p-4 rounded-lg shadow-sm transition-all',
           message.sender === 'user'
-            ? 'bg-blue-500 text-white self-end'
-            : 'bg-gray-200 text-gray-800',
+            ? 'bg-blue-600 text-white ml-auto'
+            : 'bg-gray-100 text-gray-900',
         ]">
           {{ message.text }}
         </div>
@@ -72,20 +72,21 @@ const scrollToBottom = () => {
     </div>
 
     <!-- Predefined prompts section -->
-    <div class="p-4 bg-white border-t border-gray-300">
+    <div class="p-4 bg-white border-t border-gray-200">
       <div class="flex space-x-2">
         <button v-for="(prompt, index) in predefinedPrompts" :key="index" @click="sendPredefinedMessage(prompt)"
-          class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800">
+          class="px-4 py-2 bg-gray-100 rounded-lg text-gray-800 hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
           {{ prompt }}
         </button>
       </div>
     </div>
 
     <!-- Input field for user message -->
-    <div class="flex items-center p-4 bg-white border-t border-gray-300">
+    <div class="flex items-center p-4 bg-white border-t border-gray-200">
       <input v-model="userInput" @keydown.enter="sendMessage" type="text" placeholder="Type a message..."
-        class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <button @click="sendMessage" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+        class="flex-1 p-3 bg-gray-100 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all" />
+      <button @click="sendMessage"
+        class="ml-4 px-5 py-3 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-500 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
         Send
       </button>
     </div>
@@ -93,5 +94,21 @@ const scrollToBottom = () => {
 </template>
 
 <style scoped>
-/* Optional custom styles */
+/* Optional custom styles for scrollbar and other refinements */
+.flex-1 {
+  min-height: 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
 </style>
