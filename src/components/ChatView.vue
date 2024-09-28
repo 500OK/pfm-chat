@@ -33,17 +33,41 @@ const sendMessage = async () => {
     await nextTick();
     scrollToBottom();
 
-    // Simulate bot reply
     setTimeout(async () => {
       isLoading.value = false;
-      messages.value[messages.value.length - 1] = {
-        text: "I can answer questions!",
-        sender: "bot",
-      };
+
+      // POST request to the specified URL with the input prompt
+      try {
+        const response = await fetch('https://mosquito-golden-silkworm.ngrok-free.app/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: "a69z52ea",  // Sample user_id
+            prompt: "some transactions that are not very usual"  // Your input prompt
+          })
+        });
+
+        const result = await response.json();
+
+        // Update the message with the response from the server
+        messages.value[messages.value.length - 1] = {
+          text: result.response.anomaly_detection_agent || "I can answer questions!",
+          sender: "bot",
+        };
+
+      } catch (error) {
+        console.error('Error in POST request:', error);
+        messages.value[messages.value.length - 1] = {
+          text: "Something went wrong. Please try again.",
+          sender: "bot",
+        };
+      }
 
       await nextTick();
       scrollToBottom();
-    }, 3000); // Simulate a delay of 3 seconds
+    }, 3000);
   }
 };
 
