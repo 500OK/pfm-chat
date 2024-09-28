@@ -15,6 +15,7 @@ const predefinedPrompts = ref([
 ]);
 
 const messagesContainer = ref(null);
+const isLoading = ref(false); // Flag to indicate loading
 
 const sendMessage = async () => {
   if (userInput.value.trim() !== "") {
@@ -25,13 +26,24 @@ const sendMessage = async () => {
     await nextTick();
     scrollToBottom();
 
+    // Show loading indicator while waiting for bot response
+    isLoading.value = true;
+    messages.value.push({ text: "", sender: "bot", isLoading: true });
+
+    await nextTick();
+    scrollToBottom();
+
     // Simulate bot reply
     setTimeout(async () => {
-      messages.value.push({ text: "I can answer questions!", sender: "bot" });
+      isLoading.value = false;
+      messages.value[messages.value.length - 1] = {
+        text: "I can answer questions!",
+        sender: "bot",
+      };
 
       await nextTick();
       scrollToBottom();
-    }, 1000);
+    }, 3000); // Simulate a delay of 3 seconds
   }
 };
 
@@ -40,12 +52,23 @@ const sendPredefinedMessage = async (prompt) => {
   await nextTick();
   scrollToBottom();
 
+  // Show loading indicator while waiting for bot response
+  isLoading.value = true;
+  messages.value.push({ text: "", sender: "bot", isLoading: true });
+  await nextTick();
+  scrollToBottom();
+
   // Simulate bot reply after prompt is selected
   setTimeout(async () => {
-    messages.value.push({ text: `You asked: ${prompt}`, sender: "bot" });
+    isLoading.value = false;
+    messages.value[messages.value.length - 1] = {
+      text: `You asked: ${prompt}`,
+      sender: "bot",
+    };
+
     await nextTick();
     scrollToBottom();
-  }, 1000);
+  }, 3000); // Simulate a delay of 3 seconds
 };
 
 const scrollToBottom = () => {
@@ -72,7 +95,13 @@ const autoResizeTextarea = (event) => {
             ? 'bg-blue-600 text-white ml-auto'
             : 'bg-gray-100 text-gray-900',
         ]">
-          {{ message.text }}
+          <!-- Show spinner when loading -->
+          <div v-if="message.isLoading" class="flex items-center justify-start space-x-2">
+            <div class="w-4 h-4 border-4 border-t-transparent border-blue-600 rounded-full animate-spin"></div>
+            <span class="text-gray-500">Thinking...</span>
+          </div>
+          <!-- Show actual message text when not loading -->
+          <span v-else>{{ message.text }}</span>
         </div>
       </div>
     </div>
@@ -101,7 +130,7 @@ const autoResizeTextarea = (event) => {
 </template>
 
 <style scoped>
-/* Optional custom styles for scrollbar and other refinements */
+/* Custom scrollbar styling */
 .flex-1 {
   min-height: 0;
 }
@@ -117,5 +146,20 @@ const autoResizeTextarea = (event) => {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Spinner animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
