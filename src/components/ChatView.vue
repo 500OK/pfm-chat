@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 
 const userInput = ref("");
 const messages = ref([
@@ -7,14 +7,30 @@ const messages = ref([
   { text: "What can you do?", sender: "user" },
 ]);
 
-const sendMessage = () => {
+const messagesContainer = ref(null);
+
+const sendMessage = async () => {
   if (userInput.value.trim() !== "") {
     messages.value.push({ text: userInput.value, sender: "user" });
     userInput.value = "";
+
+    // Wait for DOM updates, then scroll to the bottom
+    await nextTick();
+    scrollToBottom();
+
     // Simulate bot reply
-    setTimeout(() => {
+    setTimeout(async () => {
       messages.value.push({ text: "I can answer questions!", sender: "bot" });
+
+      await nextTick();
+      scrollToBottom();
     }, 1000);
+  }
+};
+
+const scrollToBottom = () => {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 };
 </script>
@@ -22,8 +38,8 @@ const sendMessage = () => {
 <template>
   <div class="flex flex-col h-screen bg-gray-100">
     <!-- Chat messages section -->
-    <div class="flex-1 overflow-auto p-4 space-y-4">
-      <div v-for="(message, index) in messages" :key="index" class="flex">
+    <div class="flex-1 overflow-auto p-4 space-y-4" ref="messagesContainer">
+      <div v-for="(message, index) in messages" :key="index" class="flex flex-col">
         <div :class="[
           'max-w-xs p-3 rounded-lg',
           message.sender === 'user'
