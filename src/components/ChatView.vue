@@ -53,6 +53,12 @@ const scrollToBottom = () => {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 };
+
+const autoResizeTextarea = (event) => {
+  const textarea = event.target;
+  textarea.style.height = "auto";
+  textarea.style.height = `${textarea.scrollHeight}px`;
+};
 </script>
 
 <template>
@@ -81,10 +87,11 @@ const scrollToBottom = () => {
       </div>
     </div>
 
-    <!-- Input field for user message -->
+    <!-- Input field for user message (multiline) -->
     <div class="flex items-center p-4 bg-white border-t border-gray-200">
-      <input v-model="userInput" @keydown.enter="sendMessage" type="text" placeholder="Type a message..."
-        class="flex-1 p-3 bg-gray-100 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all" />
+      <textarea v-model="userInput" @keydown.enter.exact.prevent="sendMessage" @input="autoResizeTextarea"
+        placeholder="Type a message..." rows="1"
+        class="flex-1 p-3 bg-gray-100 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-soft-neon-blue focus:bg-white transition-all resize-none"></textarea>
       <button @click="sendMessage"
         class="ml-4 px-5 py-3 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-500 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
         Send
