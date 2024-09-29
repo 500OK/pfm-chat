@@ -7,7 +7,6 @@ const BACK_END_URL = "https://mosquito-golden-silkworm.ngrok-free.app";
 const userInput = ref("");
 const messages = ref([
   { text: "Hello! **How** can I _help_ you?", sender: "bot" }, // Sample markdown message
-  { text: "What can you do?", sender: "user" },
 ]);
 
 const predefinedPrompts = ref({
@@ -59,7 +58,7 @@ const sendMessage = async () => {
         // Add a message for each agent in the response object
         Object.entries(result.response).forEach(([agent, responseText]) => {
           messages.value.push({
-            text: `${agent}: ${responseText}`,
+            text: `${responseText}`,
             sender: "bot",
           });
         });
@@ -115,7 +114,7 @@ const sendPredefinedMessage = async (key, prompt) => {
       // Add a message for each agent in the response object
       Object.entries(result.response).forEach(([agent, responseText]) => {
         messages.value.push({
-          text: `${agent}: ${responseText}`,
+          text: `${responseText}`,
           sender: "bot",
         });
       });
