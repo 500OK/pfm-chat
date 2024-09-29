@@ -8,12 +8,12 @@ const messages = ref([
   { text: "What can you do?", sender: "user" },
 ]);
 
-const predefinedPrompts = ref([
-  "Tell me a joke",
-  "What’s the weather like?",
-  "Help with my account",
-  "What services do you offer?",
-]);
+const predefinedPrompts = ref({
+  anomaly_detection_agent: "Suspicious transactions",
+  budget_prediction_agent: "Budget predictions",
+  recommendation_engine_agent: "Reccomentations",
+  transaction_categorization_agent: "Transaction categorisation",
+});
 
 const messagesContainer = ref(null);
 const isLoading = ref(false); // Flag to indicate loading
@@ -138,7 +138,7 @@ const autoResizeTextarea = (event) => {
     <!-- Predefined prompts section -->
     <div class="p-4 bg-white border-t border-gray-200">
       <div class="flex space-x-2">
-        <button v-for="(prompt, index) in predefinedPrompts" :key="index" @click="sendPredefinedMessage(prompt)"
+        <button v-for="([key, prompt], index) in Object.entries(predefinedPrompts)" :key="index" @click="sendPredefinedMessage(key)"
           class="px-4 py-2 bg-gray-100 rounded-lg text-gray-800 hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
           {{ prompt }}
         </button>
