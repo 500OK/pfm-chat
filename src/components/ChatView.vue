@@ -1,9 +1,10 @@
 <script setup>
 import { ref, nextTick } from "vue";
+import { marked } from "marked"; // Import the marked library
 
 const userInput = ref("");
 const messages = ref([
-  { text: "Hello! How can I help you?", sender: "bot" },
+  { text: "Hello! **How** can I _help_ you?", sender: "bot" }, // Sample markdown message
   { text: "What can you do?", sender: "user" },
 ]);
 
@@ -17,13 +18,14 @@ const predefinedPrompts = ref([
 const messagesContainer = ref(null);
 const isLoading = ref(false); // Flag to indicate loading
 
+// Send message function
 const sendMessage = async () => {
   if (userInput.value.trim() !== "") {
     // Add the user's message to the messages array
     messages.value.push({ text: userInput.value, sender: "user" });
-    const userPrompt = userInput.value;  // Store the user input
+    const userPrompt = userInput.value; // Store the user input
 
-    userInput.value = "";  // Clear the input field
+    userInput.value = ""; // Clear the input field
 
     // Wait for DOM updates, then scroll to the bottom
     await nextTick();
@@ -36,41 +38,42 @@ const sendMessage = async () => {
     await nextTick();
     scrollToBottom();
 
-    setTimeout(async () => {
-      isLoading.value = false;
+    isLoading.value = false;
 
-      // POST request to the specified URL with the input prompt
-      try {
-        const response = await fetch('https://mosquito-golden-silkworm.ngrok-free.app/generate', {
-          method: 'POST',
+    // POST request to the specified URL with the input prompt
+    try {
+      const response = await fetch(
+        "https://mosquito-golden-silkworm.ngrok-free.app/generate",
+        {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: "a69z52ea",  // Sample user_id
-            prompt: userPrompt  // Pass the userPrompt value to the POST request
-          })
-        });
+            user_id: "a69z52ea", // Sample user_id
+            prompt: userPrompt, // Pass the userPrompt value to the POST request
+          }),
+        },
+      );
 
-        const result = await response.json();
+      const result = await response.json();
 
-        // Update the message with the response from the server
-        messages.value[messages.value.length - 1] = {
-          text: result.response.anomaly_detection_agent || "I can answer questions!",
-          sender: "bot",
-        };
+      // Update the message with the response from the server
+      messages.value[messages.value.length - 1] = {
+        text:
+          result.response.anomaly_detection_agent || "I can answer questions!",
+        sender: "bot",
+      };
+    } catch (error) {
+      console.error("Error in POST request:", error);
+      messages.value[messages.value.length - 1] = {
+        text: "Something went wrong. Please try again.",
+        sender: "bot",
+      };
+    }
 
-      } catch (error) {
-        console.error('Error in POST request:', error);
-        messages.value[messages.value.length - 1] = {
-          text: "Something went wrong. Please try again.",
-          sender: "bot",
-        };
-      }
-
-      await nextTick();
-      scrollToBottom();
-    }, 3000);  // Simulate a delay of 3 seconds
+    await nextTick();
+    scrollToBottom();
   }
 };
 
@@ -86,16 +89,14 @@ const sendPredefinedMessage = async (prompt) => {
   scrollToBottom();
 
   // Simulate bot reply after prompt is selected
-  setTimeout(async () => {
-    isLoading.value = false;
-    messages.value[messages.value.length - 1] = {
-      text: `You asked: ${prompt}`,
-      sender: "bot",
-    };
+  isLoading.value = false;
+  messages.value[messages.value.length - 1] = {
+    text: `You asked: ${prompt}`,
+    sender: "bot",
+  };
 
-    await nextTick();
-    scrollToBottom();
-  }, 3000); // Simulate a delay of 3 seconds
+  await nextTick();
+  scrollToBottom();
 };
 
 const scrollToBottom = () => {
@@ -128,7 +129,8 @@ const autoResizeTextarea = (event) => {
             <span class="text-gray-500">Thinking...</span>
           </div>
           <!-- Show actual message text when not loading -->
-          <span v-else>{{ message.text }}</span>
+          <span v-else v-html="marked(message.text)"></span>
+          <!-- Render Markdown content -->
         </div>
       </div>
     </div>
