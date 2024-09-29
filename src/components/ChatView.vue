@@ -2,6 +2,8 @@
 import { ref, nextTick } from "vue";
 import { marked } from "marked"; // Import the marked library
 
+const BACK_END_URL = "https://mosquito-golden-silkworm.ngrok-free.app";
+
 const userInput = ref("");
 const messages = ref([
   { text: "Hello! **How** can I _help_ you?", sender: "bot" }, // Sample markdown message
@@ -42,19 +44,16 @@ const sendMessage = async () => {
 
     // POST request to the specified URL with the input prompt
     try {
-      const response = await fetch(
-        "https://mosquito-golden-silkworm.ngrok-free.app/generate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: "0d7051n1", // Sample user_id
-            prompt: userPrompt, // Pass the userPrompt value to the POST request
-          }),
+      const response = await fetch(`${BACK_END_URL}/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          user_id: "0d7051n1", // Sample user_id
+          prompt: userPrompt, // Pass the userPrompt value to the POST request
+        }),
+      });
 
       const result = await response.json();
 
@@ -92,19 +91,16 @@ const sendPredefinedMessage = async (key, prompt) => {
 
   // POST request to the specified URL with the input prompt
   try {
-    const response = await fetch(
-      "https://mosquito-golden-silkworm.ngrok-free.app/generate",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: "0d7051n1",
-          prompt: key, // Pass the userPrompt value to the POST request
-        }),
+    const response = await fetch(`${BACK_END_URL}/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        user_id: "0d7051n1",
+        prompt: key, // Pass the userPrompt value to the POST request
+      }),
+    });
 
     const result = await response.json();
 
