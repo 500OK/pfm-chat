@@ -118,7 +118,7 @@ const autoResizeTextarea = (event) => {
     <div class="flex-1 overflow-auto p-6 space-y-4" ref="messagesContainer">
       <div v-for="(message, index) in messages" :key="index" class="flex flex-col">
         <div :class="[
-          'max-w-xs p-4 rounded-lg shadow-sm transition-all overflow-x-scroll',
+          'max-w-xs p-4 rounded-lg shadow-sm transition-all overflow-x-scroll pb-1',
           message.sender === 'user'
             ? 'bg-blue-600 text-white ml-auto'
             : 'bg-gray-100 text-gray-900',
