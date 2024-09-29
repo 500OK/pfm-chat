@@ -137,7 +137,7 @@ const autoResizeTextarea = (event) => {
 
     <!-- Predefined prompts section -->
     <div class="p-4 bg-white border-t border-gray-200">
-      <div class="flex space-x-2">
+      <div class="flex flex-wrap gap-2">
         <button v-for="([key, prompt], index) in Object.entries(predefinedPrompts)" :key="index"
           @click="sendPredefinedMessage(key, prompt)"
           class="px-4 py-2 bg-gray-100 rounded-lg text-gray-800 hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
