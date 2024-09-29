@@ -23,26 +23,20 @@ const isLoading = ref(false); // Flag to indicate loading
 // Send message function
 const sendMessage = async () => {
   if (userInput.value.trim() !== "") {
-    // Add the user's message to the messages array
     messages.value.push({ text: userInput.value, sender: "user" });
-    const userPrompt = userInput.value; // Store the user input
+    const userPrompt = userInput.value;
 
-    userInput.value = ""; // Clear the input field
+    userInput.value = "";
 
-    // Wait for DOM updates, then scroll to the bottom
     await nextTick();
     scrollToBottom();
 
-    // Show loading indicator while waiting for bot response
     isLoading.value = true;
     messages.value.push({ text: "", sender: "bot", isLoading: true });
 
     await nextTick();
     scrollToBottom();
 
-    isLoading.value = false;
-
-    // POST request to the specified URL with the input prompt
     try {
       const response = await fetch(`${BACK_END_URL}/generate`, {
         method: "POST",
@@ -50,18 +44,32 @@ const sendMessage = async () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: "0d7051n1", // Sample user_id
-          prompt: userPrompt, // Pass the userPrompt value to the POST request
+          user_id: "0d7051n1",
+          prompt: userPrompt,
         }),
       });
 
       const result = await response.json();
 
-      // Update the message with the response from the server
-      messages.value[messages.value.length - 1] = {
-        text: result.response || "I can answer questions!",
-        sender: "bot",
-      };
+      // Check if the result contains the 'response' key and it's an object
+      if (result && result.response && typeof result.response === "object") {
+        // Remove the loading indicator
+        messages.value.pop();
+
+        // Add a message for each agent in the response object
+        Object.entries(result.response).forEach(([agent, responseText]) => {
+          messages.value.push({
+            text: `${agent}: ${responseText}`,
+            sender: "bot",
+          });
+        });
+      } else {
+        // Default handling if 'response' is not structured as expected
+        messages.value[messages.value.length - 1] = {
+          text: result.response || "I can answer questions!",
+          sender: "bot",
+        };
+      }
     } catch (error) {
       console.error("Error in POST request:", error);
       messages.value[messages.value.length - 1] = {
@@ -70,6 +78,7 @@ const sendMessage = async () => {
       };
     }
 
+    isLoading.value = false;
     await nextTick();
     scrollToBottom();
   }
@@ -80,16 +89,11 @@ const sendPredefinedMessage = async (key, prompt) => {
   await nextTick();
   scrollToBottom();
 
-  // Show loading indicator while waiting for bot response
   isLoading.value = true;
   messages.value.push({ text: "", sender: "bot", isLoading: true });
   await nextTick();
   scrollToBottom();
 
-  // Simulate bot reply after prompt is selected
-  isLoading.value = false;
-
-  // POST request to the specified URL with the input prompt
   try {
     const response = await fetch(`${BACK_END_URL}/generate`, {
       method: "POST",
@@ -98,17 +102,30 @@ const sendPredefinedMessage = async (key, prompt) => {
       },
       body: JSON.stringify({
         user_id: "0d7051n1",
-        prompt: key, // Pass the userPrompt value to the POST request
+        prompt: key,
       }),
     });
 
     const result = await response.json();
 
-    // Update the message with the response from the server
-    messages.value[messages.value.length - 1] = {
-      text: result.response || "I can answer questions!",
-      sender: "bot",
-    };
+    if (result && result.response && typeof result.response === "object") {
+      // Remove the loading indicator
+      messages.value.pop();
+
+      // Add a message for each agent in the response object
+      Object.entries(result.response).forEach(([agent, responseText]) => {
+        messages.value.push({
+          text: `${agent}: ${responseText}`,
+          sender: "bot",
+        });
+      });
+    } else {
+      // Default handling if 'response' is not structured as expected
+      messages.value[messages.value.length - 1] = {
+        text: result.response || "I can answer questions!",
+        sender: "bot",
+      };
+    }
   } catch (error) {
     console.error("Error in POST request:", error);
     messages.value[messages.value.length - 1] = {
@@ -117,6 +134,7 @@ const sendPredefinedMessage = async (key, prompt) => {
     };
   }
 
+  isLoading.value = false;
   await nextTick();
   scrollToBottom();
 };
